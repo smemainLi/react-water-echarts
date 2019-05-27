@@ -1,95 +1,175 @@
-import React, { FC, useEffect, useRef } from 'react';
-import echarts from "echarts";
-import "./style.css";
+import React, { FC, useEffect, useState } from 'react';
+import "./style.scss";
+import { Chart, OptionData, Weather, Card, Battery } from '../../components';
+import LabelItem from '../../components/LableItem';
+import styled from 'styled-components/macro';
 
+const earlyWarmImg = require("../../assets/images/earlyWarning.png");
+const waterLevel = require("../../assets/images/waterLevel.png");
 
-const option: any = {
-  color: ['#9bdaf7'],
-  // backgroundColor: ['-webkit-linear-gradient(#73ccf5, #2eaae3)'],//背景色
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-      type: 'line', //type类型有'line' | 'cross' | 'shadow' | 'none'(无)这四个选项可以选，选择none就可以取消柱形图表当鼠标上移显示的中轴线。
-      lineStyle: {
-        color: 'rgba(255,255,255,0.5)',
-        width: 2,
-        type: 'solid'
-      }
-    }
-  },
-  // grid: {//设置画板里面的图表距离画板左、上、右、下的距离
-  //   // x: '4%',//左
-  //   y: '18%',//上
-  //   // x2: '4%',//右
-  //   y2: '10%',//下
-  //   /*borderWith:1,*/
-  //   /*containLabel: true*/
-  // },
-  grid: [
-    { y: '7%', width: '80%', height: '80%' },
-  ],
-  xAxis: {
-    type: 'category',
-    boundaryGap: false,
-    axisTick: { show: false },
-    splitArea: { show: true },
-    nameLocation: 'start',
-    axisLabel: {
-      // interval: (x: number) => {
-      //   if (x % 2) { return true }
-      //   return ''
-      // }
-      color: "#2AA7D3"
-    },
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  },
-  yAxis: {
-    type: 'value',
-    axisLine: { show: false },
-    axisTick: { show: false },
-    splitArea: {
-      show: true,
-      // opacity: 0
-      areaStyle: {
-        color: ['rgba(255,255,255,0)']
-      }
-    },
-    splitLine: { show: false },
-  },
-  series: [{
-    data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 934, 1290, 1330, 1320],
-    type: 'line',
-    smooth: true,
-    areaStyle: {//折线包含区域样式填充
-      show: true,
-      normal: {
-        /*颜色渐变函数，前四个参数分别表示四个位置，一次为左，下，右，上*/
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-          offset: 0,//表示在0%处的颜色
-          color: '#009CFF',
-        }, {
-          offset: 1,//表示在100%处的颜色
-          color: 'rgba(255,255,255,0)',
-        }])
-      },
-    },
-  }]
-};
+const UnitContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
+const Weathers = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`
 
 const HighPositon: FC = () => {
-  const ChartCanvas = useRef<HTMLDivElement>(null)
+  const [option, setOption] = useState<OptionData>()
+  // const getData = useCallback<any>(async () => {
+  //   const res = MockData
+  //   return res
+  // }, []);
 
   useEffect(() => {
-    if (ChartCanvas) {
-      const myChart = echarts.init(ChartCanvas.current!);
-      myChart.setOption(option);
-    }
-  }, [ChartCanvas]);
+    document.title = "高位水池预警信息";
+  }, []);
+
+  useEffect(() => {
+    setOption({
+      xAxisData: ['2019.05.20 00:00', '2019.05.20 00:00', '2019.05.20 00:00', '2019.05.21 00:00', '2019.05.21 00:00', '2019.05.21 00:00', '2019.05.22 00:00', '2019.05.22 00:00', '2019.05.22 00:00', '2019.05.23 00:00', '2019.05.23 00:00', '2019.05.23 00:00', '2019.05.24 00:00', '2019.05.24 00:00', '2019.05.24 00:00', '2019.05.25 00:00', '2019.05.25 00:00', '2019.05.25 00:00', '2019.05.26 00:00', '2019.05.26 00:00', '2019.05.26 00:00'],
+      seriesData: [1.2, 1.2, 1.25, 1.3, 1.35, 1.36, 1.3, 1.2, 1.1, 1.2, 1.25, 1.3, 1.25, 1.2, 1.3, 1.5, 1.4, 1.35, 1.3, 1.35, 1.2]
+    })
+  }, []);
 
   return (
-    <div className="container">
-      <div className="chart-container" ref={ChartCanvas}></div>
+    <div className='main-body'>
+      <Card className="card-container"
+        title={
+          <>
+            <div className="e-num">设备编号：{'QC0001000100000004'}</div>
+            <Battery value={75} />
+          </>
+        }>
+        <LabelItem className="label-item"
+          prefix={
+            <div className="pre-icon">
+              <img src={earlyWarmImg} alt="" />
+            </div>
+          }
+          content={<div className="label-content">预警地址：</div>}
+          surfix={<div className="sur-content">{"珠海市凤凰山琴台观瀑（左侧）"}</div>}
+        />
+        <UnitContainer>
+          <LabelItem className="label-item"
+            prefix={
+              <div className="pre-icon">
+                <img src={waterLevel} alt="" />
+              </div>
+            }
+            content={<div className="label-content">计量单位：</div>}
+            surfix={<div className="sur-content">{"米"}</div>}
+          />
+          <LabelItem className="label-item"
+            prefix={
+              <div className="pre-icon">
+                <img src={waterLevel} alt="" />
+              </div>
+            }
+            content={<div className="label-content">负责人：</div>}
+            surfix={<div className="sur-content">{"路飞"}</div>}
+          />
+        </UnitContainer>
+        <UnitContainer>
+          <LabelItem className="label-item"
+            prefix={
+              <div className="pre-icon">
+                <img src={waterLevel} alt="" />
+              </div>
+            }
+            content={<div className="label-content">当前水位：</div>}
+            surfix={<div className="sur-content" style={{ color: "#FD1763" }}>{"1.2m"}</div>}
+          />
+          <LabelItem className="label-item"
+            prefix={
+              <div className="pre-icon">
+                <img src={waterLevel} alt="" />
+              </div>
+            }
+            content={<div className="label-content">联系电话：</div>}
+            surfix={<div className="sur-content">{"18666111122"}</div>}
+          />
+        </UnitContainer>
+        <Weathers className="weathers">
+          {[0, 1, 2, 3, 4, 5, 6].map((item, index) => {
+            return <Weather type={item} maxTem='20' minTem='12' key={`weather${index}`} />
+          })}
+        </Weathers>
+        <Chart option={option!} />
+      </Card>
+      <Card className="card-container"
+        title={
+          <>
+            <div className="e-num">设备编号：{'QC0001000100000007'}</div>
+            <Battery value={98} />
+          </>
+        }>
+        <LabelItem className="label-item"
+          prefix={
+            <div className="pre-icon">
+              <img src={earlyWarmImg} alt="" />
+            </div>
+          }
+          content={<div className="label-content">预警地址：</div>}
+          surfix={<div className="sur-content">{"珠海市凤凰山琴台观瀑（右侧）"}</div>}
+        />
+        <UnitContainer>
+          <LabelItem className="label-item"
+            prefix={
+              <div className="pre-icon">
+                <img src={waterLevel} alt="" />
+              </div>
+            }
+            content={<div className="label-content">计量单位：</div>}
+            surfix={<div className="sur-content">{"米"}</div>}
+          />
+          <LabelItem className="label-item"
+            prefix={
+              <div className="pre-icon">
+                <img src={waterLevel} alt="" />
+              </div>
+            }
+            content={<div className="label-content">当前水位：</div>}
+            surfix={<div className="sur-content" style={{ color: "#FD1763" }}>{"1.2m"}</div>}
+          />
+        </UnitContainer>
+        <UnitContainer>
+          <LabelItem className="label-item"
+            prefix={
+              <div className="pre-icon">
+                <img src={waterLevel} alt="" />
+              </div>
+            }
+            content={<div className="label-content">负责人：</div>}
+            surfix={<div className="sur-content">{"路飞"}</div>}
+          />
+          <LabelItem className="label-item"
+            prefix={
+              <div className="pre-icon">
+                <img src={waterLevel} alt="" />
+              </div>
+            }
+            content={<div className="label-content">联系电话：</div>}
+            surfix={<div className="sur-content">{"18666111122"}</div>}
+          />
+        </UnitContainer>
+        <Weathers className="weathers">
+          {[0, 1, 2, 3, 4, 5, 6].map((item, index) => {
+            return <Weather type={item} maxTem='20' minTem='12' key={`weather${index}`} />
+          })}
+        </Weathers>
+        <Chart option={option!} />
+      </Card>
+      {/* <Chart option={option!} />
+      <Chart option={option!} />
+      <Chart option={option!} />
+      <Chart option={option!} /> */}
     </div>
+
   )
 }
 

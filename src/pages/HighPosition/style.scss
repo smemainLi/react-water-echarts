@@ -1,0 +1,53 @@
+.main-body {
+  display: flex;
+  flex-direction: column;
+  width: 750px;
+  padding: 24px 32px;
+  box-sizing: border-box;
+  background: url("../../assets/images/bgImg.png") 0 0 repeat;
+  background-size: 100% 100%;
+
+  .card-container {
+    width: 686px;
+    height: 700px;
+    background-color: #0A2043;
+    margin-bottom: 24px;
+
+    .e-num {
+      font-size: 20px;
+      color: #2AA7D3;
+    }
+
+    .label-item {
+      display: flex;
+      align-items: flex-end;
+      margin-top: 22px;
+
+      .pre-icon {
+        width: 36px;
+        height: 36px;
+        margin-right: 10px;
+      }
+
+      .pre-icon img {
+        width: 100%;
+        height: 100%;
+      }
+
+      .label-content,
+      .sur-content {
+        font-size: 26px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+
+    .weathers {
+      width: 100%;
+      padding-left: 38px;
+      box-sizing: border-box;
+      margin-top: 30px;
+      padding-top: 16px;
+      border-top: 1px solid #054072;
+    }
+  }
+}
