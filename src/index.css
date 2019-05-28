@@ -1,3 +1,7 @@
+* {
+  margin: 0;
+}
+
 html,
 body,
 #root {
@@ -7,6 +11,11 @@ body,
 img {
   pointer-events: none;
   content: normal !important
+}
+
+a {
+  text-decoration: none;
+  outline: none;
 }
 
 body {
