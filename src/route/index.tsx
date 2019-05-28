@@ -3,8 +3,7 @@ import { Router, Switch, Route } from "react-router";
 import { history } from "./history";
 
 const Dashboard = lazy(() => import("../pages/Dashboard"));
-const HighPosition = lazy(() => import("../pages/HighPosition"));
-const WaterLogging = lazy(() => import("../pages/WaterLogging"));
+const WaterChart = lazy(() => import("../pages/WaterChart"));
 
 const RouterConfig: FC = () => {
   return (
@@ -12,8 +11,8 @@ const RouterConfig: FC = () => {
       <Suspense fallback={null}>
         <Switch>
           <Route path="/" exact component={Dashboard} />
-          <Route path="/highPosition" component={HighPosition} />
-          <Route path="/waterLogging" component={WaterLogging} />
+          <Route path="/highPosition/:type/:id" component={WaterChart} />
+          <Route path="/waterLogging/:type/:id" component={WaterChart} />
         </Switch>
       </Suspense>
     </Router>

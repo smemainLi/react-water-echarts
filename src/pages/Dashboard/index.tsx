@@ -13,10 +13,10 @@ export const typeTipsMap = new Map([
   [1, { color: "#FD1763", value: "预警", colors: ["#FD1763", "#070b34"] }],
   [2, { color: "#EDEF15", value: "故障", colors: ["#EDEF15", "#070b34"] }],
   [3, { color: "#20E280", value: "正常", colors: ["#20E280", "#070b34"] }]
-])
-
+]);
 
 const PieContainer = styled.div`
+  color: #0A2043;
   display: flex;
   justify-content: space-around;
 `
@@ -32,9 +32,9 @@ const Situation = styled.div`
   flex-direction: column;
   align-items: center;
   color: #2AA7D3;
-  font-size: ${px2vw(18)};
+  font-size: ${px2vw(28)};
   position: absolute;
-  top: ${px2vw(64)};
+  top: ${px2vw(80)};
 `
 
 const Perc = styled.div<{ value: number }>`
@@ -70,7 +70,6 @@ export const Dashboard: FC = (props) => {
       data.immersion && data.immersion.length && data.immersion.map((item: any) => {
         temp1.push({
           num: item.num,
-          path: item.type === 1 ? "/waterLogging" : "",
           type: item.type,
           rate: item.ratio,
           optionData: {
@@ -87,7 +86,6 @@ export const Dashboard: FC = (props) => {
       data.level && data.level.length && data.level.map((item: any) => {
         temp2.push({
           num: item.num,
-          path: item.type === 1 ? "/highPosition" : "",
           type: item.type,
           rate: item.ratio,
           optionData: {
@@ -104,16 +102,6 @@ export const Dashboard: FC = (props) => {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   setOption({
-  //     seriesData: [
-  //       { value: 3 },
-  //       { value: 1 }
-  //     ],
-  //     colorData: ["#FD1763", "#070b34"]
-  //   })
-  // }, []);
-
   return (
     <div className="dashboard-main-body">
       <Card
@@ -129,12 +117,12 @@ export const Dashboard: FC = (props) => {
         <PieContainer>
           {levelData && levelData.length && levelData.map((item, index) => {
             return (
-              <NavLink key={`level${index}`} to={item.path}>
+              <NavLink key={`level${index}`} to={`/highPosition/high/${item.type}`}>
                 <PieItem>
                   {item.optionData && <Pie option={item.optionData} id={`level${index}`}></Pie>}
                   <Situation>
                     <div>{`${item.num}台`}</div>
-                    <Perc value={item.type}>{item.rate}</Perc>
+                    {/* <Perc value={item.type}>{item.rate}</Perc> */}
                   </Situation>
                   <TypeTips value={item.type}>
                     {typeTipsMap.get(item.type)!.value}
@@ -157,12 +145,12 @@ export const Dashboard: FC = (props) => {
         <PieContainer>
           {immersionData && immersionData.length && immersionData.map((item, index) => {
             return (
-              <NavLink key={`immersion${index}`} to={item.path}>
+              <NavLink key={`immersion${index}`} to={`/waterLogging/Logging/${item.type}`}>
                 <PieItem>
                   {item.optionData && <Pie option={item.optionData} id={`immersion${index}`}></Pie>}
                   <Situation>
                     <div>{`${item.num}台`}</div>
-                    <Perc value={item.type}>{item.rate}</Perc>
+                    {/* <Perc value={item.type}>{item.rate}</Perc> */}
                   </Situation>
                   <TypeTips value={item.type}>
                     {typeTipsMap.get(item.type)!.value}
