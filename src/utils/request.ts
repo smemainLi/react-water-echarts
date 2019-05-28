@@ -5,11 +5,26 @@ export const deviceDashboard = (data = {}) => {
   return $axios.post(URL_ADDRESS["DEVICE_DASHBOARD"], data);
 }
 
-
-export const levelWarm = (data = {}) => {
-  return $axios.post(URL_ADDRESS["LEVEL_WARM"], data);
+export const levelWarn = (data = {}) => {
+  return $axios.post(URL_ADDRESS["LEVEL_WARN"], data);
 }
 
-export const immersionWarm = (data = {}) => {
-  return $axios.post(URL_ADDRESS["IMMERSION_WARM"], data);
+export const levelFault = (data = {}) => {
+  return $axios.post(URL_ADDRESS["LEVEL_FAULT"], data);
+}
+
+export const levelNormal = (data = {}) => {
+  return $axios.post(URL_ADDRESS["LEVEL_NORMAL"], data);
+}
+
+export const immersionWarn = (data = {}) => {
+  return $axios.post(URL_ADDRESS["IMMERSION_WARN"], data);
+}
+
+export const immersionFault = (data = {}) => {
+  return $axios.post(URL_ADDRESS["IMMERSION_FAULT"], data);
+}
+
+export const immersionNormal = (data = {}) => {
+  return $axios.post(URL_ADDRESS["IMMERSION_NORMAL"], data);
 }
