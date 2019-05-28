@@ -10,32 +10,56 @@ export interface ChartProps {
 
 export interface OptionData {
   xAxisData: Array<string>,
-  seriesData: Array<number>
+  seriesData: Array<number>,
+  markData: number
 }
 
 
 export const Chart: FC<ChartProps> = props => {
   const { option } = props;
-  const [config, setConfig] = useState(_config)
-  const [active, setActive] = useState(false)
+  const [config, setConfig] = useState(_config);
+  const [active, setActive] = useState(false);
 
   const ChartCanvas = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (option) {
-      setConfig((c: any) => {
-        c.xAxis.data = option.xAxisData
-        c.series[0].data = option.seriesData
-        setActive(true)
-        return c
-      })
+      let c = {
+        ..._config,
+        xAxis: {
+          ..._config.xAxis,
+          data: option.xAxisData,
+        },
+        series: {
+          ..._config.series,
+          data: option.seriesData,
+          markLine: {
+            ..._config.series.markLine,
+            data: [{
+              name: 'Y 轴值为 100 的水平线',
+              yAxis: option.markData,
+              symbol: "none",
+              label: {
+                show: false
+              },
+              lineStyle: {
+                color: "#FD1763"
+              }
+            }]
+          }
+        }
+      }
+      setActive(true);
+      setConfig(c)
     }
   }, [option])
 
   useEffect(() => {
     if (active && ChartCanvas) {
       const myChart = echarts.init(ChartCanvas.current!);
-      myChart.setOption(config);
+      // myChart.setOption(config, true);
+      // myChart.clear();
+      myChart.setOption(config, true);
     }
   }, [active, config, ChartCanvas]);
 

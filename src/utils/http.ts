@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import qs from "qs";
-import { Toast } from "antd-mobile";
-import { HTTP_ERROR } from "../constants/httpError";
+// import { Toast } from "antd-mobile";
+// import { HTTP_ERROR } from "../constants/httpError";
 
 const $axios = axios.create({
   baseURL: "",

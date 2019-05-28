@@ -1,12 +1,12 @@
 .card {
   border-radius: 8px;
-  padding: 16px 24px 0;
+  padding: 0 24px;
   box-sizing: border-box;
   border: 1px solid #054072;
 }
 
-.card-title {
+/* .card-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
+} */

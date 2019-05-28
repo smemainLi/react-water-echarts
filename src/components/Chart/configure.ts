@@ -19,7 +19,7 @@ export const config: any = {
     }
   },
   grid: [
-    { x: '8%', y: '4%', width: '90%', height: '72%' },
+    { x: '11%', y: '4%', width: '86%', height: '72%' },
   ],
   xAxis: {
     type: 'category',
@@ -47,7 +47,7 @@ export const config: any = {
       },
       color: "#2AA7D3",
       formatter: (value: string) => {
-        return `${value.split(" ")[0].split(".")[1]}.${value.split(" ")[0].split(".")[2]}`;
+        return `${value.split(" ")[0].split("-")[1]}.${value.split(" ")[0].split("-")[2]}`;
       }
     },
     data: []
@@ -74,7 +74,7 @@ export const config: any = {
       }
     },
   },
-  series: [{
+  series: {
     data: [],
     type: 'line',
     smooth: true,
@@ -84,7 +84,7 @@ export const config: any = {
       symbol: "none",
       data: [{
         name: 'Y 轴值为 100 的水平线',
-        yAxis: 1.2,
+        yAxis: 0,
         symbol: "none",
         label: {
           show: false
@@ -107,5 +107,5 @@ export const config: any = {
         }])
       },
     },
-  }]
+  }
 };

@@ -48,7 +48,7 @@ export const Battery: FC<BatteryProps> = props => {
   const { value } = props
   return (
     <Container>
-      {value}%
+      {/* {value}% */}
       <Content value={value}>
         <Body value={value} />
       </Content>
