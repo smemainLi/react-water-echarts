@@ -11,7 +11,8 @@ export interface ChartProps {
 export interface OptionData {
   xAxisData: Array<string>,
   seriesData: Array<number>,
-  markData: number
+  markData: number,
+  yAxisMax: number
 }
 
 
@@ -29,6 +30,10 @@ export const Chart: FC<ChartProps> = props => {
         xAxis: {
           ..._config.xAxis,
           data: option.xAxisData,
+        },
+        yAxis: {
+          ..._config.yAxis,
+          max: option.yAxisMax
         },
         series: {
           ..._config.series,
@@ -57,8 +62,6 @@ export const Chart: FC<ChartProps> = props => {
   useEffect(() => {
     if (active && ChartCanvas) {
       const myChart = echarts.init(ChartCanvas.current!);
-      // myChart.setOption(config, true);
-      // myChart.clear();
       myChart.setOption(config, true);
     }
   }, [active, config, ChartCanvas]);
