@@ -1,9 +1,10 @@
 import React, { FC, useEffect, useState, useCallback } from 'react';
 import "./style.scss";
-import { Chart, OptionData, Weather, Card, Battery } from '../../components';
+import { Chart, OptionData, Weather, Card, Battery, NoData } from '../../components';
 import LabelItem from '../../components/LableItem';
 import styled from 'styled-components/macro';
 import { levelWarn, levelFault, levelNormal, immersionWarn, immersionFault, immersionNormal } from '../../utils/request';
+import { Toast } from "antd-mobile";
 import { px2vw } from "../../utils/px2vw";
 import { RouteComponentProps } from 'react-router';
 
@@ -83,11 +84,16 @@ const HighPositon: FC<HighPositonProps> = (props) => {
   const [baseData, setBaseData] = useState<Array<baseData>>([]);
   const [chartData, setChartData] = useState<Array<any>>([]);
   const [cardData, setCardData] = useState<Array<any>>([]);
+  const [finished, setFinished] = useState<boolean>(false);
+  const [isEmpty, setIsEmpty] = useState<boolean>(false);
 
   const getData = useCallback<any>(async () => {
     try {
-      const result = await requestUrlMap.get(`${type}${id}`)!({ pageNo: 1, pageSize: 20 })
+      Toast.loading("loading...", 0);
+      const result = await requestUrlMap.get(`${type}${id}`)!({ pageNo: 1, pageSize: 20 });
+      Toast.hide();
       setData(result.data);
+      setFinished(true);
     } catch (error) { }
   }, [])
 
@@ -156,12 +162,13 @@ const HighPositon: FC<HighPositonProps> = (props) => {
         });
       });
       setCardData(_cardData);
+      setIsEmpty(!_cardData.length);
     }
   }, [data]);
 
   return (
     <>
-      {cardData &&
+      {finished && cardData &&
         <MainBody className="main-body" value={cardData.length}>
           {cardData && !!cardData.length && cardData.map((item, index) => {
             return <Card key={`card${index}`} className="card-container"
@@ -178,7 +185,7 @@ const HighPositon: FC<HighPositonProps> = (props) => {
                     <img src={earlyWarmImg} alt="" />
                   </div>
                 }
-                content={<div className="label-content">预警地址：</div>}
+                content={<div className="label-content label-content-extra">预警地址：</div>}
                 surfix={<div className="sur-content sur-content-extra">{item.baseData.address}</div>}
               />
               <UnitBlock>
@@ -249,6 +256,7 @@ const HighPositon: FC<HighPositonProps> = (props) => {
               <Chart option={item.chartData!} />
             </Card>
           })}
+          {finished && isEmpty && <NoData />}
         </MainBody>
       }
     </>
