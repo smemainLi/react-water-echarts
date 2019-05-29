@@ -34,6 +34,11 @@ export const requestUrlMap = new Map([
   ["Logging3", immersionNormal],
 ]);
 
+export const labelContentMap = new Map([
+  ["high", "最大水位："],
+  ["Logging", "安全水位："]
+]);
+
 
 export interface HighPositonProps extends RouteComponentProps<{ type: string, id: string }> { }
 
@@ -196,8 +201,8 @@ const HighPositon: FC<HighPositonProps> = (props) => {
                         <img src={unitImg} alt="" />
                       </div>
                     }
-                    content={<div className="label-content">最大水位：</div>}
-                    surfix={<div className="sur-content">{`${item.baseData.maxLevel}m`}</div>}
+                    content={<div className="label-content">{labelContentMap.get(type)}</div>}
+                    surfix={<div className="sur-content">{type === "high" ? `${item.baseData.maxLevel}m` : `>${item.baseData.firstWarn}m`}</div>}
                   />
                   <LabelItem className="label-item"
                     prefix={
