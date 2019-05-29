@@ -1,0 +1,21 @@
+.no-data-container {
+  font-size: 24px;
+  color: #2AA7D3;
+  padding-top: 142px;
+  text-align: center;
+
+  .img-container {
+    width: 524px;
+    height: 483px;
+    margin: 0 auto;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .tips {
+    margin-top: 72px;
+  }
+}
