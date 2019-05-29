@@ -1,10 +1,11 @@
 import React, { FC, useEffect, useState, useCallback } from 'react';
+import styled from 'styled-components/macro';
 import { NavLink } from "react-router-dom";
 import { Pie, Card } from '../../components';
 import { px2vw } from "../../utils/px2vw";
-import styled from 'styled-components/macro';
-import "./style.scss";
 import { deviceDashboard } from '../../utils/request';
+import { Toast } from "antd-mobile";
+import "./style.scss";
 
 export const LeftIcon = require("../../assets/images/leftIcon.png");
 export const RightIcon = require("../../assets/images/rightIcon.png");
@@ -47,15 +48,43 @@ const TypeTips = styled.div<{ value: number }>`
     color: ${props => typeTipsMap.get(props.value)!.color};
 `
 
-export const Dashboard: FC = (props) => {
-  // const [option, setOption] = useState<pieOptionData>();
+
+export interface totalData {
+  name: string;
+  path: string;
+  pieData: Array<chartData>;
+}
+
+export interface chartData {
+  num: number;
+  type: number;
+  rate: string;
+  optionData: optionData;
+}
+
+export interface optionData {
+  seriesData: Array<seriesData>;
+  colorData: Array<string>;
+}
+
+export interface seriesData {
+  value: number;
+}
+
+
+export const Dashboard: FC = () => {
   const [data, setData] = useState<any>({});
-  const [levelData, setLevelData] = useState<Array<any>>([]);
-  const [immersionData, setImmersionData] = useState<Array<any>>([]);
+  const [levelData, setLevelData] = useState<totalData>();
+  const [immersionData, setImmersionData] = useState<totalData>();
+  const [totalData, setTotalData] = useState<Array<totalData>>([]);
+  const [finished, setFinished] = useState<boolean>(false);
 
   const getData = useCallback(async () => {
+    Toast.loading("loading...", 0);
     const result = await deviceDashboard();
+    Toast.hide();
     setData(result.data);
+    setFinished(true);
   }, [])
 
   useEffect(() => {
@@ -65,103 +94,89 @@ export const Dashboard: FC = (props) => {
 
   useEffect(() => {
     if (!!data && Object.keys(data).length) {
-      const temp1: any = []
-      const temp2: any = []
-      data.immersion && data.immersion.length && data.immersion.map((item: any) => {
-        temp1.push({
-          num: item.num,
-          type: item.type,
-          rate: item.ratio,
-          optionData: {
-            seriesData: [
-              { value: item.num },
-              { value: Number(data.immersionAll - item.num) }
-            ],
-            colorData: typeTipsMap.get(item.type)!.colors
+      const levelName = "高位水池信息";
+      const immersionName = "水浸信息";
+      const levelPath = "/highPosition/high/";
+      const immersionPath = "/waterLogging/Logging/";
+      setLevelData({
+        name: levelName,
+        path: levelPath,
+        pieData: data.level && data.level.length && data.level.map((item: any) => {
+          return {
+            num: item.num,
+            type: item.type,
+            rate: item.ratio,
+            optionData: {
+              seriesData: [
+                { value: item.num },
+                { value: Number(data.levelAll - item.num) }
+              ],
+              colorData: typeTipsMap.get(item.type)!.colors
+            }
           }
         })
-      })
-      setImmersionData(temp1);
-
-      data.level && data.level.length && data.level.map((item: any) => {
-        temp2.push({
-          num: item.num,
-          type: item.type,
-          rate: item.ratio,
-          optionData: {
-            seriesData: [
-              { value: item.num },
-              { value: Number(data.levelAll - item.num) }
-            ],
-            colorData: typeTipsMap.get(item.type)!.colors
+      });
+      setImmersionData({
+        name: immersionName,
+        path: immersionPath,
+        pieData: data.immersion && data.immersion.length && data.immersion.map((item: any) => {
+          return {
+            num: item.num,
+            type: item.type,
+            rate: item.ratio,
+            optionData: {
+              seriesData: [
+                { value: item.num },
+                { value: Number(data.immersionAll - item.num) }
+              ],
+              colorData: typeTipsMap.get(item.type)!.colors
+            }
           }
         })
-      })
-      setLevelData(temp2)
-
+      });
     }
   }, [data]);
 
+  useEffect(() => {
+    if (levelData && immersionData) {
+      setTotalData([levelData, immersionData]);
+    }
+  }, [levelData, immersionData])
+
   return (
     <div className="dashboard-main-body">
-      <Card
-        className="card-container"
-        titleClassName="card-title"
-        title={
-          <>
-            <div className="icon-container"><img src={LeftIcon} alt="" /></div>
-            <div className="title-content">高位水池信息</div>
-            <div className="icon-container"><img src={RightIcon} alt="" /></div>
-          </>
-        }>
-        <PieContainer>
-          {levelData && levelData.length && levelData.map((item, index) => {
-            return (
-              <NavLink key={`level${index}`} to={`/highPosition/high/${item.type}`}>
-                <PieItem>
-                  {item.optionData && <Pie option={item.optionData} id={`level${index}`}></Pie>}
-                  <Situation>
-                    <div>{`${item.num}台`}</div>
-                    {/* <Perc value={item.type}>{item.rate}</Perc> */}
-                  </Situation>
-                  <TypeTips value={item.type}>
-                    {typeTipsMap.get(item.type)!.value}
-                  </TypeTips>
-                </PieItem>
-              </NavLink>
-            )
-          })}
-        </PieContainer>
-      </Card>
-      <Card className="card-container"
-        titleClassName="card-title"
-        title={
-          <>
-            <div className="icon-container"><img src={LeftIcon} alt="" /></div>
-            <div className="title-content">水浸信息</div>
-            <div className="icon-container"><img src={RightIcon} alt="" /></div>
-          </>
-        }>
-        <PieContainer>
-          {immersionData && immersionData.length && immersionData.map((item, index) => {
-            return (
-              <NavLink key={`immersion${index}`} to={`/waterLogging/Logging/${item.type}`}>
-                <PieItem>
-                  {item.optionData && <Pie option={item.optionData} id={`immersion${index}`}></Pie>}
-                  <Situation>
-                    <div>{`${item.num}台`}</div>
-                    {/* <Perc value={item.type}>{item.rate}</Perc> */}
-                  </Situation>
-                  <TypeTips value={item.type}>
-                    {typeTipsMap.get(item.type)!.value}
-                  </TypeTips>
-                </PieItem>
-              </NavLink>
-            )
-          })}
-        </PieContainer>
-      </Card>
-      <div className="equipment-info">您目前只有2种设备信息！</div>
+      {finished && totalData.length && totalData.map((totalItem, index) => {
+        return <Card
+          key={`total${index}`}
+          className="card-container"
+          titleClassName="card-title"
+          title={
+            <>
+              <div className="icon-container"><img src={LeftIcon} alt="" /></div>
+              <div className="title-content">{totalItem.name}</div>
+              <div className="icon-container"><img src={RightIcon} alt="" /></div>
+            </>
+          }>
+          <PieContainer>
+            {totalItem.pieData && totalItem.pieData.length && totalItem.pieData.map((pieItem, index) => {
+              return (
+                <NavLink key={`pieItem${index}`} to={`${totalItem.path}${pieItem.type}`}>
+                  <PieItem>
+                    {pieItem.optionData && <Pie option={pieItem.optionData} id={`${totalItem.path.split("/")[1]}${index}`}></Pie>}
+                    <Situation>
+                      <div>{`${pieItem.num}台`}</div>
+                    </Situation>
+                    <TypeTips value={pieItem.type}>
+                      {typeTipsMap.get(pieItem.type)!.value}
+                    </TypeTips>
+                  </PieItem>
+                </NavLink>
+              )
+            })}
+          </PieContainer>
+        </Card>
+      })}
+      {finished && <div className="equipment-info">您目前只有2种设备信息！</div>}
     </div>
   )
 }
