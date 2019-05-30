@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components/macro';
 import { NavLink } from "react-router-dom";
-import { Pie, Card } from '../../components';
+import { Pie, Card, Copyright } from '../../components';
 import { px2vw } from "../../utils/px2vw";
 import { deviceDashboard } from '../../utils/request';
 import { Toast } from "antd-mobile";
@@ -35,7 +35,7 @@ const Situation = styled.div`
   color: #2AA7D3;
   font-size: ${px2vw(28)};
   position: absolute;
-  top: ${px2vw(80)};
+  top: ${px2vw(86)};
 `
 
 const Perc = styled.div<{ value: number }>`
@@ -88,14 +88,14 @@ export const Dashboard: FC = () => {
   }, [])
 
   useEffect(() => {
-    document.title = "应急数据驾驶舱";
+    document.title = "物联网云平台数据驾驶舱";
     getData();
   }, []);
 
   useEffect(() => {
     if (!!data && Object.keys(data).length) {
-      const levelName = "高位水池信息";
-      const immersionName = "水浸信息";
+      const levelName = "森林防火高位水池信息";
+      const immersionName = "城市水浸监测信息";
       const levelPath = "/highPosition/high/";
       const immersionPath = "/waterLogging/Logging/";
       setLevelData({
@@ -177,6 +177,7 @@ export const Dashboard: FC = () => {
         </Card>
       })}
       {finished && <div className="equipment-info">您目前只有2种设备信息！</div>}
+      {finished && <Copyright />}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState, useCallback } from 'react';
 import "./style.scss";
-import { Chart, OptionData, Weather, Card, Battery, NoData } from '../../components';
+import { Chart, OptionData, Weather, Card, Battery, NoData, Copyright } from '../../components';
 import LabelItem from '../../components/LableItem';
 import styled from 'styled-components/macro';
 import { levelWarn, levelFault, levelNormal, immersionWarn, immersionFault, immersionNormal } from '../../utils/request';
@@ -35,8 +35,8 @@ export const requestUrlMap = new Map([
 ]);
 
 export const labelContentMap = new Map([
-  ["high", "最大水位："],
-  ["Logging", "安全水位："]
+  ["high", { documentTitle: "森林防火高位水池信息", labelOne: "最大水位：", labelTwo: "预警水位：", labelType: 0 }],
+  ["Logging", { documentTitle: "城市水浸监测信息", labelOne: "橙色预警：", labelTwo: "红色预警：", labelType: 1 }]
 ]);
 
 
@@ -56,10 +56,11 @@ const MainBody = styled.div<{ value: number }>`
   flex-direction: column;
   width: ${px2vw(750)};
   height: ${props => props.value > 1 ? "auto" : "100%"};
-  padding: ${px2vw(24)} ${px2vw(32)};
+  padding: ${px2vw(24)} ${px2vw(32)} ${px2vw(80)};
   box-sizing: border-box;
   /* background: url(${bgImg}) 0 0 repeat; */
   background-size: 100% 100%;
+  position: relative;
 `
 
 const UnitBlock = styled.div`
@@ -71,6 +72,11 @@ const UnitContainer = styled.div`
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+`
+
+const SurContent = styled.div<{ value: number }>`
+  font-size: ${px2vw(24)};
+  color: ${ props => props.value ? "#FC8800" : "rgba(255, 255, 255, 0.5)"};
 `
 
 const Weathers = styled.div`
@@ -103,7 +109,7 @@ const HighPositon: FC<HighPositonProps> = (props) => {
   }, [])
 
   useEffect(() => {
-    document.title = "高位水池预警信息";
+    document.title = labelContentMap.get(type)!.documentTitle;
     getData();
   }, []);
 
@@ -114,10 +120,11 @@ const HighPositon: FC<HighPositonProps> = (props) => {
       // const _baseData: Array<baseData> = [];
       let _baseData: any = {};
       const _chartData: any = [];
-      let _optionData: OptionData = { xAxisData: [], seriesData: [], markData: 0, yAxisMax: 0 };
+      let _optionData: OptionData = { xAxisData: [], seriesData: [], markDataOne: 0, markDataTwo: 0, yAxisMax: 0 };
       let _xAxisData: any = [];
       let _seriesData: any = [];
-      let _markData: number = 0;
+      let _markDataOne: number = 0;
+      let _markDataTwo: number = 0;
       let _yAxisMax: number = 0;
       const _cardData: Array<any> = [];
       list && list.length && list.forEach((listItem: any) => {
@@ -129,12 +136,13 @@ const HighPositon: FC<HighPositonProps> = (props) => {
           contacts: listItem.contacts,
           mobile: listItem.mobile,
           firstWarn: listItem.firstWarn,
-          maxLevel: listItem.maxLevel
+          maxLevel: listItem.maxLevel === undefined ? listItem.secondWarn : listItem.maxLevel
         }
         setBaseData(_baseData);
         const warnList = listItem.warnList;
-        _markData = listItem.firstWarn;
-        _yAxisMax = listItem.maxLevel;
+        _markDataOne = listItem.firstWarn;
+        _markDataTwo = listItem.secondWarn === undefined ? 0 : listItem.secondWarn;
+        _yAxisMax = listItem.maxLevel === undefined ? listItem.secondWarn * 2 : listItem.maxLevel;
         warnList && warnList.length && warnList.forEach((warnItem: any) => {
           // _optionData.xAxisData.push(warnItem.name);
           // _optionData.seriesData.push(warnItem.value);
@@ -144,16 +152,17 @@ const HighPositon: FC<HighPositonProps> = (props) => {
         let _optionData_ = {
           xAxisData: _xAxisData,
           seriesData: _seriesData,
-          markData: _markData,
+          markDataOne: _markDataOne,
+          markDataTwo: _markDataTwo,
           yAxisMax: _yAxisMax
-        }
+        };
         // _optionData.xAxisData = _xAxisData;
         // _optionData.seriesData = _seriesData;
-        // _optionData.markData = _markData;
+        // _optionData.markDataOne = _markDataOne;
         // _optionData = {
         //   xAxisData: _xAxisData,
         //   seriesData: _seriesData,
-        //   markData: _markData
+        //   markDataOne: _markDataOne
         // }
         _xAxisData = [];
         _seriesData = [];
@@ -198,11 +207,15 @@ const HighPositon: FC<HighPositonProps> = (props) => {
                   <LabelItem className="label-item"
                     prefix={
                       <div className="pre-icon">
-                        <img src={unitImg} alt="" />
+                        <img src={labelContentMap.get(type)!.labelType ? warnWaterLevelImg : unitImg} alt="" />
                       </div>
                     }
-                    content={<div className="label-content">{labelContentMap.get(type)}</div>}
-                    surfix={<div className="sur-content">{type === "high" ? `${item.baseData.maxLevel}m` : `>${item.baseData.firstWarn}m`}</div>}
+                    content={<div className="label-content">{labelContentMap.get(type)!.labelOne}</div>}
+                    surfix={
+                      <SurContent value={labelContentMap.get(type)!.labelType}>
+                        {labelContentMap.get(type)!.labelType ? `${item.baseData.firstWarn}m` : `${item.baseData.maxLevel}m`}
+                      </SurContent>
+                    }
                   />
                   <LabelItem className="label-item"
                     prefix={
@@ -210,8 +223,8 @@ const HighPositon: FC<HighPositonProps> = (props) => {
                         <img src={warnWaterLevelImg} alt="" />
                       </div>
                     }
-                    content={<div className="label-content">预警水位：</div>}
-                    surfix={<div className="sur-content" style={{ color: "#FD1763" }}>{`${item.baseData.firstWarn}m`}</div>}
+                    content={<div className="label-content">{labelContentMap.get(type)!.labelTwo}</div>}
+                    surfix={<div className="sur-content" style={{ color: "#FD1763" }}>{labelContentMap.get(type)!.labelType ? `${item.baseData.maxLevel}m` : `${item.baseData.firstWarn}m`}</div>}
                   />
                   <LabelItem className="label-item"
                     prefix={
@@ -258,9 +271,11 @@ const HighPositon: FC<HighPositonProps> = (props) => {
                   return <Weather type={item.type} maxTem='20' minTem='12' key={`weather${index}`} />
                 })}
               </Weathers>
-              <Chart option={item.chartData!} />
+              <Chart option={item.chartData!} type={type} />
             </Card>
           })}
+          {/* {finished && <div className="equipment-info">目前只有2种设备信息！</div>} */}
+          {finished && <Copyright />}
           {finished && isEmpty && <NoData />}
         </MainBody>
       }
