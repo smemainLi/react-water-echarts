@@ -5,3 +5,4 @@ export * from "./LableItem";
 export * from "./NoData";
 export * from "./Pie";
 export * from "./Weather";
+export * from "./Copyright";
