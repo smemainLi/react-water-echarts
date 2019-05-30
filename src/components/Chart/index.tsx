@@ -1,23 +1,26 @@
 import echarts from "echarts";
 import React, { FC, useRef, useEffect, useState } from 'react';
-
 import { config as _config } from './configure'
 import "./style.css";
+import { labelContentMap } from "../../pages/WaterChart";
+
 
 export interface ChartProps {
   option: OptionData;
+  type: string;
 }
 
 export interface OptionData {
   xAxisData: Array<string>,
   seriesData: Array<number>,
-  markData: number,
+  markDataOne: number,
+  markDataTwo: number,
   yAxisMax: number
 }
 
 
 export const Chart: FC<ChartProps> = props => {
-  const { option } = props;
+  const { option, type } = props;
   const [config, setConfig] = useState(_config);
   const [active, setActive] = useState(false);
 
@@ -25,6 +28,42 @@ export const Chart: FC<ChartProps> = props => {
 
   useEffect(() => {
     if (option) {
+      let markLineData: Array<any> = [];
+      markLineData = labelContentMap.get(type)!.labelType ?
+        [{
+          yAxis: option.markDataOne,
+          symbol: "none",
+          label: {
+            show: false
+          },
+          lineStyle: {
+            color: "#FC8800",
+            width: 2,
+          }
+        },
+        {
+          yAxis: option.markDataTwo,
+          symbol: "none",
+          label: {
+            show: false
+          },
+          lineStyle: {
+            color: "#FD1763",
+            width: 2,
+          }
+        }] :
+        [{
+          yAxis: option.markDataOne,
+          symbol: "none",
+          label: {
+            show: false
+          },
+          lineStyle: {
+            color: "#FD1763",
+            width: 2,
+          }
+        }]
+
       let c = {
         ..._config,
         xAxis: {
@@ -40,17 +79,7 @@ export const Chart: FC<ChartProps> = props => {
           data: option.seriesData,
           markLine: {
             ..._config.series.markLine,
-            data: [{
-              name: 'Y 轴值为 100 的水平线',
-              yAxis: option.markData,
-              symbol: "none",
-              label: {
-                show: false
-              },
-              lineStyle: {
-                color: "#FD1763"
-              }
-            }]
+            data: markLineData
           }
         }
       }
