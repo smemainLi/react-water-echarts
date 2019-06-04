@@ -32,7 +32,7 @@ module.exports = function(proxy, allowedHost) {
     
     // disableHostCheck:
     //   !!proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
-    disableHostCheck: true, 
+    disableHostCheck: true, // 解决无效主机头问题 Invalid Host header
     // ws: false,
     // Enable gzip compression of generated files.
     compress: true,
