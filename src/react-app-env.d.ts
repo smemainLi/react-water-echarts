@@ -9,6 +9,8 @@ declare namespace NodeJS {
   }
 }
 
+declare module 'weixin-js-sdk'
+
 declare module '*.bmp' {
   const src: string;
   export default src;

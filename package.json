@@ -69,6 +69,7 @@
     "webpack": "4.29.6",
     "webpack-dev-server": "3.2.1",
     "webpack-manifest-plugin": "2.0.4",
+    "weixin-js-sdk": "^1.4.0-test",
     "workbox-webpack-plugin": "4.2.0"
   },
   "scripts": {
@@ -151,6 +152,7 @@
     "@types/react-dom": "^16.8.4",
     "@types/react-router-dom": "^4.3.3",
     "@types/styled-components": "^4.1.15",
+    "babel-plugin-import": "^1.12.0",
     "cssnano": "^4.1.10",
     "node-sass": "^4.12.0"
   },

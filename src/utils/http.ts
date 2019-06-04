@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import qs from "qs";
+import { history } from "../route/history";
 // import { Toast } from "antd-mobile";
 // import { HTTP_ERROR } from "../constants/httpError";
 

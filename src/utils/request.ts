@@ -28,3 +28,7 @@ export const immersionFault = (data = {}) => {
 export const immersionNormal = (data = {}) => {
   return $axios.post(URL_ADDRESS["IMMERSION_NORMAL"], data);
 }
+
+export const jssdkConfig = (data = {}) => {
+  return $axios.post(URL_ADDRESS["JSSDK_CONFIG"], data);
+}

@@ -1,21 +1,49 @@
-import React, { FC, useEffect, useState, useCallback } from 'react';
-import "./style.scss";
-import { Chart, OptionData, Weather, Card, Battery, NoData, Copyright } from '../../components';
+import bgImg from '../../assets/images/bgImg.png';
+import contactImg from '../../assets/images/contactImg.png';
+import deviceStatus from '../../assets/images/deviceStatus.png';
+import earlyWarmImg from '../../assets/images/earlyWarning.png';
 import LabelItem from '../../components/LableItem';
+import phoneImg from '../../assets/images/phoneImg.png';
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useState
+  } from 'react';
 import styled from 'styled-components/macro';
-import { levelWarn, levelFault, levelNormal, immersionWarn, immersionFault, immersionNormal } from '../../utils/request';
-import { Toast } from "antd-mobile";
-import { px2vw } from "../../utils/px2vw";
+import unitImg from '../../assets/images/unitImg.png';
+import warnWaterLevelImg from '../../assets/images/warnWaterLevelImg.png';
+import waterLevelImg from '../../assets/images/waterLevel.png';
+import wx from 'weixin-js-sdk';
+import {
+  Battery,
+  Card,
+  Chart,
+  Copyright,
+  NoData,
+  OptionData,
+  Weather
+  } from '../../components';
+import {
+  immersionFault,
+  immersionNormal,
+  immersionWarn,
+  jssdkConfig,
+  levelFault,
+  levelNormal,
+  levelWarn
+  } from '../../utils/request';
+import {
+  onMenuShareAppMessage,
+  onMenuShareTimeline,
+  updateAppMessageShareData,
+  updateTimelineShareData
+  } from '../../utils/wx';
+import { px2vw } from '../../utils/px2vw';
 import { RouteComponentProps } from 'react-router';
+import { Toast } from 'antd-mobile';
+import './style.scss';
 
-import bgImg from "../../assets/images/bgImg.png";
-import earlyWarmImg from "../../assets/images/earlyWarning.png";
-import waterLevelImg from "../../assets/images/waterLevel.png";
-import contactImg from "../../assets/images/contactImg.png";
-import phoneImg from "../../assets/images/phoneImg.png";
-import unitImg from "../../assets/images/unitImg.png";
-import warnWaterLevelImg from "../../assets/images/warnWaterLevelImg.png";
-import deviceStatus from "../../assets/images/deviceStatus.png";
 
 // export const bgImg = import("../../assets/images/bgImg.png");
 
@@ -90,6 +118,7 @@ const HighPositon: FC<HighPositonProps> = (props) => {
 
   const [option, setOption] = useState<OptionData>();
   const [data, setData] = useState<any>({});
+  const [config, setConfig] = useState<any>({});
   const [options, setOptions] = useState<any>([]);
   const [weatherTypes, setWeatherTypes] = useState<Array<any>>([]);
   const [baseData, setBaseData] = useState<Array<baseData>>([]);
@@ -97,6 +126,42 @@ const HighPositon: FC<HighPositonProps> = (props) => {
   const [cardData, setCardData] = useState<Array<any>>([]);
   const [finished, setFinished] = useState<boolean>(false);
   const [isEmpty, setIsEmpty] = useState<boolean>(false);
+
+  const getConfig = useCallback(async () => {
+    const result = await jssdkConfig({ url: props.location.pathname });
+    setConfig(result.data);
+  }, []);
+
+  useEffect(() => {
+    getConfig();
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(config).length) { 
+      wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: config.appid, // 必填，公众号的唯一标识
+        timestamp: config.timestamp, // 必填，生成签名的时间戳
+        nonceStr: config.noncestr, // 必填，生成签名的随机串
+        signature: config.sign, // 必填，签名
+        jsApiList: ['updateTimelineShareData', 'onMenuShareTimeline', 'updateAppMessageShareData', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表
+      });
+      wx.ready(function () {
+        let data = {
+          title: "智慧应急管理-数据驾舱",
+          desc: "智慧应急管理-数据驾舱-随时掌控一切！",
+          link: `${window.location.origin}${props.location.pathname}`,
+          imgUrl: `${window.location.origin}/static/media/placeholder.c75937d0.png`,
+          type: "",
+          dataUrl: ""
+        }
+        updateAppMessageShareData(data);
+        updateTimelineShareData(data);
+        onMenuShareTimeline(data);
+        onMenuShareAppMessage(data);
+      })
+    }
+  }, [config]);
 
   const getData = useCallback<any>(async () => {
     try {

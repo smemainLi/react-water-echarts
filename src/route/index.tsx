@@ -5,6 +5,7 @@ import { history } from "./history";
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const WaterChart = lazy(() => import("../pages/WaterChart"));
 
+
 const RouterConfig: FC = () => {
   return (
     <Router history={history}>

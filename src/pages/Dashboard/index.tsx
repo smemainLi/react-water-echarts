@@ -1,11 +1,23 @@
-import React, { FC, useEffect, useState, useCallback } from 'react';
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useState
+  } from 'react';
 import styled from 'styled-components/macro';
-import { NavLink } from "react-router-dom";
-import { Pie, Card, Copyright } from '../../components';
-import { px2vw } from "../../utils/px2vw";
-import { deviceDashboard } from '../../utils/request';
-import { Toast } from "antd-mobile";
-import "./style.scss";
+import wx from 'weixin-js-sdk';
+import { Card, Copyright, Pie } from '../../components';
+import { deviceDashboard, jssdkConfig } from '../../utils/request';
+import { NavLink, RouteComponentProps } from 'react-router-dom';
+import {
+  onMenuShareAppMessage,
+  onMenuShareTimeline,
+  updateAppMessageShareData,
+  updateTimelineShareData
+  } from '../../utils/wx';
+import { px2vw } from '../../utils/px2vw';
+import { Toast } from 'antd-mobile';
+import './style.scss';
 
 export const LeftIcon = require("../../assets/images/leftIcon.png");
 export const RightIcon = require("../../assets/images/rightIcon.png");
@@ -71,13 +83,51 @@ export interface seriesData {
   value: number;
 }
 
+export interface DashboardProps extends RouteComponentProps{}
 
-export const Dashboard: FC = () => {
+export const Dashboard: FC<DashboardProps> = (props) => {
   const [data, setData] = useState<any>({});
+  const [config, setConfig] = useState<any>({});
   const [levelData, setLevelData] = useState<totalData>();
   const [immersionData, setImmersionData] = useState<totalData>();
   const [totalData, setTotalData] = useState<Array<totalData>>([]);
   const [finished, setFinished] = useState<boolean>(false);
+
+  const getConfig = useCallback(async () => {
+    const result = await jssdkConfig({ url: props.location.pathname });
+    setConfig(result.data);    
+  }, []);
+
+  useEffect(() => {
+    getConfig();
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(config).length) { 
+      wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: config.appid, // 必填，公众号的唯一标识
+        timestamp: config.timestamp, // 必填，生成签名的时间戳
+        nonceStr: config.noncestr, // 必填，生成签名的随机串
+        signature: config.sign, // 必填，签名
+        jsApiList: ['updateTimelineShareData', 'onMenuShareTimeline', 'updateAppMessageShareData', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表
+      });
+      wx.ready(function () {
+        let data = {
+          title: "智慧应急管理-数据驾舱",
+          desc: "智慧应急管理-数据驾舱-随时掌控一切！",
+          link: `${window.location.origin}${props.location.pathname}`,
+          imgUrl: `${window.location.origin}/static/media/placeholder.c75937d0.png`,
+          type: "",
+          dataUrl: ""
+        }
+        updateAppMessageShareData(data);
+        updateTimelineShareData(data);
+        onMenuShareTimeline(data);
+        onMenuShareAppMessage(data);
+      })
+    }
+  }, [config]);
 
   const getData = useCallback(async () => {
     Toast.loading("loading...", 0);
@@ -85,10 +135,10 @@ export const Dashboard: FC = () => {
     Toast.hide();
     setData(result.data);
     setFinished(true);
-  }, [])
+  }, []);
 
   useEffect(() => {
-    document.title = "物联网云平台数据驾驶舱";
+    document.title = "智慧应急管理-数据驾舱";
     getData();
   }, []);
 

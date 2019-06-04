@@ -6,4 +6,5 @@ export const URL_ADDRESS = {
   IMMERSION_WARN: "/admin/restful/device/immersion/warnInfo",
   IMMERSION_FAULT: "/admin/restful/device/immersion/faultInfo",
   IMMERSION_NORMAL: "/admin/restful/device/immersion/normalInfo",
+  JSSDK_CONFIG: "/wx/user/account/getJsSdkConfig",
 }
